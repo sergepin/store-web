@@ -12,7 +12,7 @@ export default function ProductsPage() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await api.products.list({ limit: 12 });
+        const response = await api.products.list({ limit: 30 });
         setProducts(response?.data || []);
       } catch (err: any) {
         setError(err.message || 'Error fetching products');
