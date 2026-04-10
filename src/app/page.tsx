@@ -1,17 +1,31 @@
+'use client';
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { CategoryCard } from "@/components/ui/CategoryCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { api } from "@/lib/api";
 
 export default function Home() {
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const response = await api.products.list({ limit: 4 });
+        setFeaturedProducts(response?.data || []);
+      } catch (error) {
+        console.error("Error fetching featured products:", error);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen" suppressHydrationWarning>
-      <Navigation />
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-[#f0f3ff] py-12 md:py-0">
@@ -80,21 +94,30 @@ export default function Home() {
               centered
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[1, 2, 3, 4].map((id) => (
-                <ProductCard 
-                  key={id} 
-                  id={id} 
-                  name="Apex Mechanical Pro" 
-                  price={189.00} 
-                  tag="Limitado" 
-                />
-              ))}
+              {featuredProducts.length > 0 ? (
+                featuredProducts.map((product) => {
+                  const firstVariant = product.variants?.[0];
+                  const price = firstVariant?.price?.amount ? firstVariant.price.amount / 100 : 0;
+                  return (
+                    <ProductCard 
+                      key={product.id} 
+                      id={product.id} 
+                      slug={product.slug}
+                      name={product.name} 
+                      price={price} 
+                      tag={product.isFeatured ? "Destacado" : undefined} 
+                    />
+                  );
+                })
+              ) : (
+                [1, 2, 3, 4].map((id) => (
+                  <div key={id} className="h-64 bg-slate-100 animate-pulse rounded-[2rem]" />
+                ))
+              )}
             </div>
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

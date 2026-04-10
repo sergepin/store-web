@@ -60,29 +60,6 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">GamerStore</h1>
-            <span className="hidden sm:block h-4 w-px bg-gray-200"></span>
-            <p className="hidden sm:block text-sm text-gray-500 font-medium uppercase tracking-wider">Catálogo</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center bg-gray-100 rounded-full px-3 py-1 border border-gray-200">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-tight">
-                Tenant: {typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : '...'}
-              </span>
-            </div>
-            <button className="p-2 text-gray-400 hover:text-gray-600 relative">
-              <span className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full"></span>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-            </button>
-          </div>
-        </div>
-      </header>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>

@@ -1,4 +1,24 @@
+'use client';
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { api } from "@/lib/api";
+
 export default function Footer() {
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await api.categories.list();
+        setCategories(data?.slice(0, 5) || []);
+      } catch (error) {
+        console.error("Error fetching categories for footer:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   return (
     <footer className="bg-slate-950 text-white py-24 px-6 mt-auto">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
@@ -11,10 +31,14 @@ export default function Footer() {
         <div>
           <h5 className="font-bold mb-8 uppercase tracking-widest text-xs text-slate-500">Tienda</h5>
           <ul className="space-y-4 text-sm text-slate-400">
-            <li><a href="#" className="hover:text-primary kinetic-transition">Todo el equipo</a></li>
-            <li><a href="#" className="hover:text-primary kinetic-transition">Teclados</a></li>
-            <li><a href="#" className="hover:text-primary kinetic-transition">Ratones</a></li>
-            <li><a href="#" className="hover:text-primary kinetic-transition">Audio</a></li>
+            <li><Link href="/" className="hover:text-primary kinetic-transition">Todo el equipo</Link></li>
+            {categories.map((category) => (
+              <li key={category.id}>
+                <Link href={`/categories/${category.slug}`} className="hover:text-primary kinetic-transition">
+                  {category.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
         <div>
@@ -27,7 +51,7 @@ export default function Footer() {
         </div>
         <div>
           <h5 className="font-bold mb-8 uppercase tracking-widest text-xs text-slate-500">Newsletter</h5>
-          <div className="flex gap-2">
+          <div className="flex gap-2" suppressHydrationWarning>
             <input type="text" placeholder="Tu email" className="bg-white/5 border border-white/10 rounded-full px-6 py-3 text-sm focus:outline-none focus:border-primary flex-1" />
             <button className="bg-primary px-6 py-3 rounded-full font-bold text-sm hover:scale-105 kinetic-transition">Unirse</button>
           </div>

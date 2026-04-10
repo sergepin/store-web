@@ -1,45 +1,39 @@
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ShoppingCart, Heart } from "lucide-react";
+import { api } from "@/lib/api";
+import { notFound } from "next/navigation";
+import { formatCurrency } from "@/lib/utils";
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
-  // Mock de datos para el producto (esto vendría de tu API)
-  const product = {
-    name: "Apex Mechanical Keyboard X-Series",
-    price: 189.00,
-    category: "Teclados",
-    categorySlug: "keyboards",
-    description: "Experimenta la máxima precisión con nuestro teclado mecánico insignia. Diseñado para profesionales, con switches de respuesta instantánea y retroiluminación RGB sincronizable.",
-    features: [
-      { title: "Switches Mecánicos", desc: "Respuesta de 1ms" },
-      { title: "Construcción", desc: "Aluminio Aeronáutico" },
-      { title: "Conectividad", desc: "USB-C Desmontable" },
-      { title: "Iluminación", desc: "RGB Per-Key" }
-    ],
-    specs: [
-      { label: "Peso", value: "1.2kg" },
-      { label: "Dimensiones", value: "440 x 140 x 35 mm" },
-      { label: "Vida útil", value: "80 millones de pulsaciones" },
-      { label: "Layout", value: "ISO Español" }
-    ]
-  };
+  let productData;
+  try {
+    productData = await api.products.getBySlug(slug);
+  } catch (error) {
+    console.error("Error fetching product by slug:", error);
+    return notFound();
+  }
+
+  if (!productData) {
+    return notFound();
+  }
+
+  const firstVariant = productData.variants?.[0];
+  const price = firstVariant?.price?.amount ? firstVariant.price.amount / 100 : 0;
+  const primaryCategory = productData.primaryCategory || productData.categories?.[0];
 
   const breadcrumbItems = [
     { label: "Inicio", href: "/" },
-    { label: product.category, href: `/categories/${product.categorySlug}` },
-    { label: product.name }
+    { label: primaryCategory?.name || "Categoría", href: `/categories/${primaryCategory?.slug || ""}` },
+    { label: productData.name }
   ];
 
   return (
     <div className="flex flex-col min-h-screen bg-background" suppressHydrationWarning>
-      <Navigation />
-
       <main className="flex-1">
         {/* Breadcrumbs */}
         <div className="container mx-auto px-6 py-8">
@@ -67,34 +61,38 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <div className="flex-1 space-y-10">
               <div>
                 <Badge variant="primary" className="mb-6">
-                  En Stock - Envío Gratis
+                  {firstVariant?.stock?.available > 0 ? "En Stock - Envío Gratis" : "Sin Stock"}
                 </Badge>
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-900 mb-4 leading-tight">
-                  {product.name}
+                  {productData.name}
                 </h1>
                 <div className="flex items-center gap-4">
-                  <span className="text-4xl font-bold text-primary">{product.price.toFixed(2)}€</span>
-                  <span className="text-slate-400 line-through text-lg">229.00€</span>
+                  <span className="text-4xl font-bold text-primary">{formatCurrency(price)}</span>
+                  {firstVariant?.price?.compareAt && (
+                    <span className="text-slate-400 line-through text-lg">
+                      {formatCurrency(firstVariant.price.compareAt / 100)}
+                    </span>
+                  )}
                 </div>
               </div>
 
               <p className="text-slate-500 text-lg leading-relaxed font-medium">
-                {product.description}
+                {productData.description}
               </p>
 
-              {/* Technical Features Grid */}
+              {/* Technical Features (Attributes) */}
               <div className="grid grid-cols-2 gap-4">
-                {product.features.map((feature, i) => (
+                {firstVariant?.attributes && Object.entries(firstVariant.attributes).map(([key, value], i) => (
                   <div key={i} className="p-4 bg-[#f0f3ff] rounded-2xl border border-white">
-                    <div className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">{feature.title}</div>
-                    <div className="text-sm font-bold text-slate-700">{feature.desc}</div>
+                    <div className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">{key}</div>
+                    <div className="text-sm font-bold text-slate-700">{String(value)}</div>
                   </div>
                 ))}
               </div>
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                <Button variant="primary" size="lg" className="flex-1 gap-3">
+                <Button variant="primary" size="lg" className="flex-1 gap-3" disabled={firstVariant?.stock?.available <= 0}>
                   <ShoppingCart className="w-5 h-5" />
                   Añadir al Carrito
                 </Button>
@@ -105,22 +103,28 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
               {/* Specifications Table */}
               <div className="pt-10 border-t border-slate-100">
-                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-900 mb-6">Especificaciones Detalladas</h3>
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-900 mb-6">Detalles Técnicos</h3>
                 <div className="space-y-3">
-                  {product.specs.map((spec, i) => (
-                    <div key={i} className="flex flex-col sm:flex-row justify-between py-3 border-b border-slate-50 gap-1 sm:gap-0">
-                      <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">{spec.label}</span>
-                      <span className="text-sm font-bold text-slate-700">{spec.value}</span>
+                  <div className="flex flex-col sm:flex-row justify-between py-3 border-b border-slate-50 gap-1 sm:gap-0">
+                    <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">SKU</span>
+                    <span className="text-sm font-bold text-slate-700">{firstVariant?.sku}</span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row justify-between py-3 border-b border-slate-50 gap-1 sm:gap-0">
+                    <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Categoría</span>
+                    <span className="text-sm font-bold text-slate-700">{primaryCategory?.name}</span>
+                  </div>
+                  {firstVariant?.stock && (
+                    <div className="flex flex-col sm:flex-row justify-between py-3 border-b border-slate-50 gap-1 sm:gap-0">
+                      <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">Disponibilidad</span>
+                      <span className="text-sm font-bold text-slate-700">{firstVariant.stock.available} unidades</span>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

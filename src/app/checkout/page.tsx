@@ -1,11 +1,8 @@
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import { formatCurrency } from "@/lib/utils";
 
 export default function CheckoutPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#f9f9ff]" suppressHydrationWarning>
-      <Navigation />
-
       <main className="flex-1 py-12">
         <div className="container mx-auto px-6">
           {/* Progress Steps */}
@@ -93,7 +90,7 @@ export default function CheckoutPage() {
                     <div className="w-16 h-16 bg-[#f0f3ff] rounded-xl flex items-center justify-center text-[10px] font-bold text-slate-300">ITEM</div>
                     <div className="flex-1">
                       <div className="text-sm font-bold text-slate-900 leading-tight">Apex Mechanical Pro</div>
-                      <div className="text-xs font-bold text-primary mt-1">189.00€</div>
+                      <div className="text-xs font-bold text-primary mt-1">{formatCurrency(189)}</div>
                     </div>
                   </div>
                 </div>
@@ -101,7 +98,7 @@ export default function CheckoutPage() {
                 <div className="space-y-4 pt-6 border-t border-slate-50">
                   <div className="flex justify-between text-sm font-medium text-slate-400">
                     <span>Subtotal</span>
-                    <span>189.00€</span>
+                    <span>{formatCurrency(189)}</span>
                   </div>
                   <div className="flex justify-between text-sm font-medium text-slate-400">
                     <span>Envío</span>
@@ -109,7 +106,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-xl font-bold text-slate-900 pt-4">
                     <span>Total</span>
-                    <span>189.00€</span>
+                    <span>{formatCurrency(189)}</span>
                   </div>
                 </div>
 
@@ -126,8 +123,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

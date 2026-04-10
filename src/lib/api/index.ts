@@ -23,21 +23,28 @@ export const api = {
     /**
      * Get a list of products with optional filtering.
      */
-    list: async (params?: ExtractQuery<ApiPaths['/products']['get']>) => {
+    list: async (params?: ExtractQuery<ApiPaths['/products']['get']> & { minPrice?: number; maxPrice?: number; brand?: string; attributes?: string; sortBy?: string; sortOrder?: string }) => {
       const response = await apiClient.get<ExtractResponse<ApiPaths['/products']['get']>>('/products', { params });
       return response.data;
     },
     /**
-     * Get details for a single product.
+     * Get details for a single product by its id.
      */
     get: async (id: string | number) => {
       const response = await apiClient.get<ExtractResponse<ApiPaths['/products/{id}']['get']>>(`/products/${id}`);
       return response.data;
     },
     /**
+     * Get details for a single product by its slug.
+     */
+    getBySlug: async (slug: string) => {
+      const response = await apiClient.get<ExtractResponse<ApiPaths['/products/slug/{slug}']['get']>>(`/products/slug/${slug}`);
+      return response.data;
+    },
+    /**
      * Search products by query.
      */
-    search: async (q: string, params?: ExtractQuery<ApiPaths['/products/search']['get']>) => {
+    search: async (q: string, params?: ExtractQuery<ApiPaths['/products/search']['get']> & { minPrice?: number; maxPrice?: number; brand?: string; attributes?: string; sortBy?: string; sortOrder?: string }) => {
       const response = await apiClient.get<ExtractResponse<ApiPaths['/products/search']['get']>>('/products/search', { 
         params: { ...params, q } 
       });
@@ -56,7 +63,7 @@ export const api = {
     /**
      * Get products in a specific category by its slug.
      */
-    getBySlug: async (slug: string, params?: ExtractQuery<ApiPaths['/category/{slug}']['get']>) => {
+    getBySlug: async (slug: string, params?: ExtractQuery<ApiPaths['/category/{slug}']['get']> & { minPrice?: number; maxPrice?: number; brand?: string; sortBy?: string; sortOrder?: string }) => {
       const response = await apiClient.get<ExtractResponse<ApiPaths['/category/{slug}']['get']>>(`/category/${slug}`, { params });
       return response.data;
     },
@@ -79,4 +86,3 @@ export const api = {
     },
   },
 };
-

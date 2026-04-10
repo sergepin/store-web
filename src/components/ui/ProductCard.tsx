@@ -3,10 +3,11 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "./Button";
 import { Badge } from "./Badge";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 interface ProductCardProps {
   id: string | number;
+  slug: string;
   name: string;
   price: string | number;
   image?: string;
@@ -16,10 +17,10 @@ interface ProductCardProps {
   className?: string;
 }
 
-export function ProductCard({ id, name, price, image, tag, categoryTag, description, className }: ProductCardProps) {
+export function ProductCard({ id, slug, name, price, image, tag, categoryTag, description, className }: ProductCardProps) {
   return (
     <Link 
-      href={`/products/${id}`}
+      href={`/products/${slug}`}
       className={cn(
         "group bg-white p-6 rounded-[2rem] kinetic-transition hover:shadow-2xl hover:shadow-purple-500/5 cursor-pointer border border-transparent hover:border-purple-100 flex flex-col h-full",
         className
@@ -59,7 +60,7 @@ export function ProductCard({ id, name, price, image, tag, categoryTag, descript
       
       <div className="flex justify-between items-center pt-4 border-t border-slate-50 mt-auto">
         <span className="text-xl font-bold text-primary">
-          {typeof price === "number" ? `${price.toFixed(2)} €` : price}
+          {typeof price === "number" ? formatCurrency(price) : price}
         </span>
         <Button 
           variant="secondary" 

@@ -1,5 +1,4 @@
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import { formatCurrency } from "@/lib/utils";
 
 export default function ProfilePage() {
   const user = {
@@ -9,15 +8,13 @@ export default function ProfilePage() {
     level: "Pro Gamer",
     xp: 75,
     recentOrders: [
-      { id: "ORD-99281", date: "10 Abr 2026", status: "En camino", total: "189.00€" },
-      { id: "ORD-98122", date: "25 Mar 2026", status: "Entregado", total: "54.90€" }
+      { id: "ORD-99281", date: "10 Abr 2026", status: "En camino", total: 189 },
+      { id: "ORD-98122", date: "25 Mar 2026", status: "Entregado", total: 54.90 }
     ]
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f9f9ff]" suppressHydrationWarning>
-      <Navigation />
-
       <main className="flex-1 py-12">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12">
@@ -110,7 +107,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex items-center justify-between sm:justify-end gap-8 mt-4 sm:mt-0">
                         <div className="text-right">
-                          <p className="text-sm font-bold text-slate-900">{order.total}</p>
+                          <p className="text-sm font-bold text-slate-900">{formatCurrency(order.total)}</p>
                           <p className={`text-[10px] font-bold uppercase tracking-widest ${
                             order.status === "En camino" ? "text-primary" : "text-green-500"
                           }`}>{order.status}</p>
@@ -128,8 +125,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
