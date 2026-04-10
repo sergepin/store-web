@@ -7,6 +7,38 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 
+const GENERIC_BRAND_LABEL = "Genérico";
+
+const normalizeBrandLabel = (value: unknown): string | null => {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim().replace(/\s+/g, " ");
+  if (!trimmed) return null;
+
+  const lowered = trimmed.toLowerCase();
+  return lowered
+    .split(" ")
+    .filter(Boolean)
+    .map((token) => {
+      const alnumLen = token.replace(/[^a-z0-9]/g, "").length;
+      if (alnumLen > 0 && alnumLen <= 3) return token.toUpperCase();
+      return token.replace(
+        /(^|[.\-_/])([a-z])/g,
+        (_, sep: string, c: string) => `${sep}${c.toUpperCase()}`,
+      );
+    })
+    .join(" ");
+};
+
+const normalizeBrandSelection = (value: string): string | null => {
+  const trimmed = value.trim().replace(/\s+/g, " ");
+  if (!trimmed) return null;
+  const key = trimmed.toLowerCase();
+  if (key === "generico" || key === "genérico" || key === "generic") {
+    return GENERIC_BRAND_LABEL;
+  }
+  return normalizeBrandLabel(trimmed);
+};
+
 export default function CategoryPage() {
   const { slug } = useParams() as { slug: string };
   const searchParams = useSearchParams();
@@ -25,12 +57,17 @@ export default function CategoryPage() {
 
   // 0. Obtener parámetros de la URL al cargar
   useEffect(() => {
-    const brands = searchParams.get("brands")?.split(",").filter(Boolean) || [];
+    const brands =
+      searchParams.get("brands")?.split(",").filter(Boolean) || [];
     const min = searchParams.get("minPrice");
     const max = searchParams.get("maxPrice");
     const sort = searchParams.get("sort") || "recent";
 
-    setSelectedBrands(brands);
+    setSelectedBrands(
+      brands
+        .map((b) => normalizeBrandSelection(b))
+        .filter(Boolean) as string[],
+    );
     if (min && max) setPriceRange([Number(min), Number(max)]);
     setSortBy(sort);
   }, [searchParams]);
@@ -86,11 +123,25 @@ export default function CategoryPage() {
 
   // Extraer marcas y rangos de precio de TODOS los productos de la categoría
   const availableBrands = useMemo(() => {
-    const brands = new Set<string>();
-    allCategoryProducts.forEach(p => {
-      if (p.brand) brands.add(p.brand);
+    const byKey = new Map<string, string>();
+    let hasGeneric = false;
+
+    allCategoryProducts.forEach((p) => {
+      const normalized = normalizeBrandLabel(p.brand);
+      if (!normalized) {
+        hasGeneric = true;
+        return;
+      }
+      const key = normalized.toLowerCase();
+      if (!byKey.has(key)) byKey.set(key, normalized);
     });
-    return Array.from(brands).sort();
+
+    const list = Array.from(byKey.values()).sort((a, b) =>
+      a.localeCompare(b, "es"),
+    );
+
+    if (hasGeneric) list.unshift(GENERIC_BRAND_LABEL);
+    return list;
   }, [allCategoryProducts]);
 
   // Generar rangos de precio dinámicos basados en los productos reales
