@@ -1,6 +1,6 @@
 export default function SearchPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 p-8">
+    <div className="min-h-screen bg-white text-slate-900 p-8" suppressHydrationWarning>
       <h1 className="text-3xl font-bold border-b border-purple-100 pb-4">
         Resultados de Búsqueda
       </h1>

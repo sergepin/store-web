@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Search, User, ShoppingCart } from "lucide-react";
 
 export default function Navigation() {
   return (
@@ -12,19 +13,20 @@ export default function Navigation() {
         </div>
       </div>
       <div className="flex items-center gap-6">
-        <div className="hidden sm:flex items-center bg-slate-100/50 px-4 py-2 rounded-full border border-purple-100/50">
+        <div className="hidden sm:flex items-center bg-slate-100/50 px-4 py-2 rounded-full border border-purple-100/50 group focus-within:border-primary/30 kinetic-transition">
+          <Search className="w-4 h-4 text-slate-400 mr-2 group-focus-within:text-primary kinetic-transition" />
           <input 
             type="text" 
             placeholder="Buscar equipo..." 
-            className="bg-transparent border-none text-sm focus:outline-none w-48"
+            className="bg-transparent border-none text-sm focus:outline-none w-48 text-slate-700"
           />
         </div>
         <div className="flex gap-4">
-          <Link href="/profile" className="text-slate-600 hover:text-primary kinetic-transition">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <Link href="/profile" className="text-slate-600 hover:text-primary kinetic-transition" aria-label="Perfil de usuario">
+            <User className="w-6 h-6" />
           </Link>
-          <div className="relative text-slate-600 hover:text-primary kinetic-transition cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+          <div className="relative text-slate-600 hover:text-primary kinetic-transition cursor-pointer" aria-label="Carrito de compras">
+            <ShoppingCart className="w-6 h-6" />
             <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
           </div>
         </div>

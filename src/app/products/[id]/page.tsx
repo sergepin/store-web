@@ -1,6 +1,10 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Image from "next/image";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { ShoppingCart, Heart } from "lucide-react";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -10,6 +14,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     name: "Apex Mechanical Keyboard X-Series",
     price: 189.00,
     category: "Teclados",
+    categorySlug: "keyboards",
     description: "Experimenta la máxima precisión con nuestro teclado mecánico insignia. Diseñado para profesionales, con switches de respuesta instantánea y retroiluminación RGB sincronizable.",
     features: [
       { title: "Switches Mecánicos", desc: "Respuesta de 1ms" },
@@ -25,20 +30,20 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     ]
   };
 
+  const breadcrumbItems = [
+    { label: "Inicio", href: "/" },
+    { label: product.category, href: `/categories/${product.categorySlug}` },
+    { label: product.name }
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background" suppressHydrationWarning>
       <Navigation />
 
       <main className="flex-1">
         {/* Breadcrumbs */}
         <div className="container mx-auto px-6 py-8">
-          <nav className="text-xs font-bold tracking-widest uppercase text-slate-400">
-            <a href="/" className="hover:text-primary transition-colors">Inicio</a>
-            <span className="mx-2">/</span>
-            <a href="/categories/perifericos" className="hover:text-primary transition-colors">{product.category}</a>
-            <span className="mx-2">/</span>
-            <span className="text-primary">{product.name}</span>
-          </nav>
+          <Breadcrumbs items={breadcrumbItems} />
         </div>
 
         <section className="container mx-auto px-6 pb-24">
@@ -61,10 +66,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {/* Product Info */}
             <div className="flex-1 space-y-10">
               <div>
-                <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full mb-6 tracking-widest uppercase">
+                <Badge variant="primary" className="mb-6">
                   En Stock - Envío Gratis
-                </span>
-                <h1 className="text-5xl font-bold tracking-tighter text-slate-900 mb-4 leading-tight">
+                </Badge>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-900 mb-4 leading-tight">
                   {product.name}
                 </h1>
                 <div className="flex items-center gap-4">
@@ -89,13 +94,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                <button className="flex-1 bg-primary text-white px-10 py-5 rounded-full font-bold hover:scale-[1.02] neon-shadow kinetic-transition flex items-center justify-center gap-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                <Button variant="primary" size="lg" className="flex-1 gap-3">
+                  <ShoppingCart className="w-5 h-5" />
                   Añadir al Carrito
-                </button>
-                <button className="p-5 rounded-full border border-purple-200 hover:bg-white kinetic-transition text-slate-400 hover:text-red-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                </button>
+                </Button>
+                <Button variant="outline" size="lg" className="px-5 text-slate-400 hover:text-red-500" aria-label="Añadir a deseos">
+                  <Heart className="w-6 h-6" />
+                </Button>
               </div>
 
               {/* Specifications Table */}
@@ -103,7 +108,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-slate-900 mb-6">Especificaciones Detalladas</h3>
                 <div className="space-y-3">
                   {product.specs.map((spec, i) => (
-                    <div key={i} className="flex justify-between py-3 border-b border-slate-50">
+                    <div key={i} className="flex flex-col sm:flex-row justify-between py-3 border-b border-slate-50 gap-1 sm:gap-0">
                       <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">{spec.label}</span>
                       <span className="text-sm font-bold text-slate-700">{spec.value}</span>
                     </div>

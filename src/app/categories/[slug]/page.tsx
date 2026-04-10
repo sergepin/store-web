@@ -1,24 +1,28 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { ProductCard } from "@/components/ui/ProductCard";
+import { Badge } from "@/components/ui/Badge";
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   // En una app real, aquí haríamos fetch de los productos por categoría
   const categoryName = slug.charAt(0).toUpperCase() + slug.slice(1);
 
+  const breadcrumbItems = [
+    { label: "Inicio", href: "/" },
+    { label: categoryName }
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background" suppressHydrationWarning>
       <Navigation />
 
       <main className="flex-1">
         {/* Category Header */}
         <header className="bg-white border-b border-purple-100/50 py-16">
           <div className="container mx-auto px-6">
-            <nav className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-4">
-              <a href="/" className="hover:text-primary transition-colors">Inicio</a>
-              <span className="mx-2">/</span>
-              <span className="text-primary">{categoryName}</span>
-            </nav>
+            <Breadcrumbs items={breadcrumbItems} className="mb-4" />
             <h1 className="text-5xl font-bold tracking-tighter text-slate-900 mb-4">{categoryName}</h1>
             <p className="text-slate-500 max-w-2xl font-medium leading-relaxed">
               Equípate con lo mejor en {slug}. Ingeniería de vanguardia diseñada para ofrecerte la ventaja competitiva definitiva.
@@ -81,27 +85,15 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
                 {[1, 2, 3, 4, 5, 6].map((id) => (
-                  <div key={id} className="group bg-white p-6 rounded-[2rem] kinetic-transition hover:shadow-2xl hover:shadow-purple-500/5 cursor-pointer border border-transparent hover:border-purple-100 flex flex-col h-full">
-                    <div className="aspect-square bg-[#f0f3ff] rounded-2xl mb-6 relative overflow-hidden">
-                      <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-bold">PROD_{id}</div>
-                      {id === 1 && (
-                        <div className="absolute top-4 right-4 bg-primary text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg shadow-primary/20">
-                          Top Ventas
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[10px] font-bold text-primary uppercase tracking-widest mb-2">Wireless Tech</div>
-                      <h4 className="font-bold text-slate-900 mb-2 group-hover:text-primary kinetic-transition text-lg leading-tight">Elite {categoryName} X-Series Pro</h4>
-                      <p className="text-sm text-slate-400 mb-4 line-clamp-2">Sensor de alta precisión y switches mecánicos premium para un rendimiento sin igual.</p>
-                    </div>
-                    <div className="flex justify-between items-center pt-4 border-t border-slate-50">
-                      <span className="text-2xl font-bold text-primary">{(129 + id * 10).toFixed(2)}€</span>
-                      <button className="bg-slate-900 text-white p-3 rounded-xl opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 kinetic-transition hover:bg-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7v14"/></svg>
-                      </button>
-                    </div>
-                  </div>
+                  <ProductCard 
+                    key={id}
+                    id={id}
+                    name={`Elite ${categoryName} X-Series Pro`}
+                    price={129 + id * 10}
+                    categoryTag="Wireless Tech"
+                    description="Sensor de alta precisión y switches mecánicos premium para un rendimiento sin igual."
+                    tag={id === 1 ? "Top Ventas" : undefined}
+                  />
                 ))}
               </div>
 
